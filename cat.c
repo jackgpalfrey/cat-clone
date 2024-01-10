@@ -9,7 +9,7 @@ struct Flags {
     // e implemented with -vE
     int E; // DONE
     int n; // DONE
-    int s;
+    int s; // DONE
     // t implemented with -vT
     int T;
     int v;
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]){
     int currentFileIdx = optind;
     // printf("%i, %i", currentFileIdx, argc);
     do {
-        if (currentFileIdx == argc){
+        if (currentFileIdx == argc || !strcmp(argv[currentFileIdx],"-")){
             fp = stdin;
         } 
         else {
