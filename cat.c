@@ -22,10 +22,11 @@ int main(int argc, char *argv[]){
     const int bufferSize = 4096;
     char buffer[bufferSize];
 
+    int lineNum = 1;
 
     // Flags
     int opt;
-    struct Flags flags = {0,0,0,0,0,0,0};
+    struct Flags flags = {0,0,0,0,0,0};
     while ((opt = getopt(argc, argv, "AbeEnstTv")) != -1){
         switch (opt){
             case 'A':
@@ -62,30 +63,32 @@ int main(int argc, char *argv[]){
         }
     }
 
+
     // For multiple files
     int currentFileIdx = optind;
-
-    while (currentFileIdx < argc){
-        if (argc > 1){
+    // printf("%i, %i", currentFileIdx, argc);
+    do {
+        if (currentFileIdx == argc){
+            fp = stdin;
+        } 
+        else {
             fp = fopen(argv[currentFileIdx], "rb");
             if (fp == NULL) {
                 fprintf(stderr, "%s: %s: No such file or directory\n", argv[0], argv[argc - 1]);
                 exit(1);
             }
-        } else {
-            fp = stdin;
-        }
+        } 
 
 
 
         int prevNewLine = 0;
         char *numFString = "     %i\t";
-        int lineNum = 1;
+
         while (fgets(buffer, bufferSize, fp)) {
             int bufLen = strlen(buffer);
             int isEmptyLine = bufLen <= 1;
 
-            if (isEmptyLine && prevNewLine) continue;
+            if (flags.s && isEmptyLine && prevNewLine) continue;
             prevNewLine = isEmptyLine;
 
             if (flags.b && !isEmptyLine) fprintf(stdout, numFString, lineNum++);
@@ -97,7 +100,7 @@ int main(int argc, char *argv[]){
             fprintf(stdout, "\n");
         }
         currentFileIdx++;
-    }
+    } while (currentFileIdx < argc);
 
     fclose(fp);
     return 0;
