@@ -16,11 +16,32 @@ struct Flags {
 };
 
 
+void handleFile(FILE *fp, int bufSize){
+    char buffer[bufSize];
+
+    int prevNewLine = 0;
+    char *numFString = "     %i\t";
+    int code;
+    char ch;
+    char* bufPtr = buffer;
+
+    do {
+        code = fgetc(fp);
+        if (code == EOF) break;
+
+        ch = (char)code;
+        *bufPtr++ = ch;
+ 
+    } while (1);
+
+    printf("%s", buffer);
+    bufPtr = buffer;
+}
+
 int main(int argc, char *argv[]){
     // Basic file and buffer vars
     FILE *fp;
     const int bufferSize = 128;
-    char buffer[bufferSize];
 
     int lineNum = 1;
 
@@ -64,9 +85,7 @@ int main(int argc, char *argv[]){
     }
 
 
-    // For multiple files
     int currentFileIdx = optind;
-    // printf("%i, %i", currentFileIdx, argc);
     do {
         if (currentFileIdx == argc || !strcmp(argv[currentFileIdx],"-")){
             fp = stdin;
@@ -79,25 +98,8 @@ int main(int argc, char *argv[]){
             }
         } 
 
+        handleFile(fp, bufferSize);
 
-
-        int prevNewLine = 0;
-        char *numFString = "     %i\t";
-        int code;
-        char ch;
-        char* bufPtr = buffer;
-
-        do {
-            code = fgetc(fp);
-            if (code == EOF) break;
-
-            ch = (char)code;
-            *bufPtr++ = ch;
-     
-        } while (1);
-
-        printf("%s", buffer);
-        bufPtr = buffer;
         currentFileIdx++;
     } while (currentFileIdx < argc);
 
