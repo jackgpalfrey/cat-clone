@@ -19,7 +19,7 @@ struct Flags {
 int main(int argc, char *argv[]){
     // Basic file and buffer vars
     FILE *fp;
-    const int bufferSize = 128;
+    const int bufferSize = 4096;
     char buffer[bufferSize];
 
     int lineNum = 1;
@@ -83,21 +83,22 @@ int main(int argc, char *argv[]){
 
         int prevNewLine = 0;
         char *numFString = "     %i\t";
-        int code;
-        char ch;
-        char* bufPtr = buffer;
 
-        do {
-            code = fgetc(fp);
-            if (code == EOF) break;
+        while (fgets(buffer, bufferSize, fp)) {
+            int bufLen = strlen(buffer);
+            int isEmptyLine = bufLen <= 1;
 
-            ch = (char)code;
-            *bufPtr++ = ch;
-     
-        } while (1);
+            if (flags.s && isEmptyLine && prevNewLine) continue;
+            prevNewLine = isEmptyLine;
 
-        printf("%s", buffer);
-        bufPtr = buffer;
+            if (flags.b && !isEmptyLine) fprintf(stdout, numFString, lineNum++);
+            else if (flags.n) fprintf(stdout, numFString, lineNum++); 
+
+            buffer[bufLen - 1] = '\0';
+            fprintf(stdout, "%s", buffer);
+            if (flags.E) fprintf(stdout, "$");
+            fprintf(stdout, "\n");
+        }
         currentFileIdx++;
     } while (currentFileIdx < argc);
 
